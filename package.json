@@ -1,0 +1,19 @@
+{
+  "name": "docsorter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^18.2.0"
+  },
+  "dependencies": {
+    "klaw": "^4.0.1",
+    "klaw-sync": "^6.0.0"
+  }
+}

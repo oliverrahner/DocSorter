@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <title>Hello World!</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="./renderer.js"></script>
+</head>
+<body>
+<div id="pdfviewer-container">
+  <iframe id="pdfviewer">
+  </iframe>
+</div>
+<div id="workarea">
+  <div id="target"><label for="target-path">Target Folder<br/><input id="target-path" type="text">
+    <div id="folderlist-container"><div id="folderlist-count">&nbsp;</div><div id="folderlist"></div></div></div>
+
+</div>
+</body>
+</html>

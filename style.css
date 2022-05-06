@@ -1,0 +1,62 @@
+* {
+    box-sizing: border-box;
+    font-family: "Segoe UI Variable", Arial, SansSerif;
+}
+
+html, body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    margin: 0;
+}
+
+body {
+    display: grid;
+    grid-template-columns: 5fr 5fr;
+}
+
+#pdfviewer-container {
+    min-width: 50%;
+    width: 100%;
+    min-height: 100%;
+    height: 100%;
+}
+
+#pdfviewer {
+    width: 100%;
+    height: 100%;
+}
+
+#workarea {
+    padding: 10px;
+    background: beige;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-rows: minmax(auto, 200px) repeat(5, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    max-height: 100%;
+}
+
+#target {
+    grid-column: 1 / 5;
+    grid-row: 1 / 1;
+}
+
+#folderlist-container {
+    max-height: 10rem;
+    margin: 10px 0 10px 0;
+}
+
+#folderlist {
+    width: 100%;
+    line-break: strict;
+    background: #ffffff;
+    font-size: 80%;
+    border: 1px solid black;
+    height: 10rem;
+    overflow: scroll;
+}
+
+.search-match {
+    background-color: khaki;
+}
