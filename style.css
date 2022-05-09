@@ -30,15 +30,15 @@ body {
 #workarea {
     padding: 10px;
     background: beige;
-    display: grid;
+    display: block;
     grid-gap: 10px;
     grid-template-rows: minmax(auto, 200px) repeat(5, 1fr);
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: 1fr;
     max-height: 100%;
 }
 
 #target {
-    grid-column: 1 / 5;
+    grid-column: 1 / 2;
     grid-row: 1 / 1;
 }
 
@@ -57,6 +57,87 @@ body {
     overflow: scroll;
 }
 
+#existing-documents {
+    border-radius: 10px;
+    height: 10rem;
+    border: 1px solid black;
+    background: rgba(255,255,255,0.8);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 10px;
+}
+
+.button-container {
+    padding: 10px 0 10px 0;
+}
+
+.button {
+    width: 100%;
+    border-radius: 10px;
+    color: white;
+    padding: 20px;
+}
+
+#submit {
+    background: lightgreen;
+}
+
+#delete-button {
+    background: lightpink;
+}
+
+
+#delete-button {
+    width: 100%;
+    border-radius: 10px;
+    background: lightpink;
+    color: white;
+    padding: 20px;
+}
+
+.messagebox {
+    border-radius: 10px;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 600px;
+    min-height: 50px;
+    text-align: center;
+    padding: 10px;
+    color: #ffffff;
+    transition: opacity 1s;
+}
+
+.messagebox.error {
+    border: 1px solid crimson;
+    background: lightpink;
+}
+
+.messagebox.message {
+    border: 1px solid green;
+    background: lightgreen;
+}
+
 .search-match {
     background-color: khaki;
+}
+
+input {
+    width: 100%;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+label {
+    padding: 10px;
+    display: block;
+}
+
+.file.pdf {
+    margin-left: 10px;
+    background-image: url("pdf_file_icon.svg");
+    background-repeat: no-repeat;
+    background-position: left;
+    background-size: 0.7rem;
+    padding-left: 1rem;
 }

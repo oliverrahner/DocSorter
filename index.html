@@ -5,19 +5,58 @@
   <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
   <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-  <title>Hello World!</title>
+  <title>PDF Document Mover</title>
   <link rel="stylesheet" href="style.css"/>
   <script src="./renderer.js"></script>
 </head>
 <body>
+<div class="messagebox">
+</div>
+<div class="popup-modal shadow"
+     data-popup-modal="one">
+  <i class="fas fa-2x fa-times text-white bg-primary p-3 popup-modal__close"></i>
+  <h1 class="font-weight-bold">
+    Configuration
+  </h1>
+</div>
 <div id="pdfviewer-container">
   <iframe id="pdfviewer">
   </iframe>
 </div>
 <div id="workarea">
-  <div id="target"><label for="target-path">Target Folder<br/><input id="target-path" type="text">
-    <div id="folderlist-container"><div id="folderlist-count">&nbsp;</div><div id="folderlist"></div></div></div>
+  <div id="menu">
+    <button class="popup-trigger">Settings</button>
+    <button>Reload</button>
+  </div>
+  <div id="target">
+    <label for="target-path">Target Folder</label>
+    <input id="target-path" type="text" list="folderlist">
+    <div id="folderlist-container">
+      <div id="folderlist-count">&nbsp;</div>
+      <datalist id="folderlist"></datalist>
+    </div>
+  </div>
+  <div id="existing-documents-container">
+    <label for="existing-documents">Existing Documents in Target Directory</label>
+    <div id="existing-documents"></div>
+  </div>
+  <div id="documentdate-container">
+    <label for="documentdate">Document Date</label>
+    <input id="documentdate" type="text">
+  </div>
+  <div id="documentname-container">
+    <label for="documentname">Document Name</label>
+    <input id="documentname" type="text">
+  </div>
 
+  <div class="button-container">
+    <button class="button" id="submit">Move File</button>
+  </div>
+  <div class="button-container">
+    <button class="button" id="delete-button">Mark File for Deletion</button>
+  </div>
 </div>
+
+
 </body>
 </html>

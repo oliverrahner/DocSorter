@@ -13,6 +13,7 @@
     "electron": "^18.2.0"
   },
   "dependencies": {
+    "chokidar": "^3.5.3",
     "klaw": "^4.0.1",
     "klaw-sync": "^6.0.0"
   }
