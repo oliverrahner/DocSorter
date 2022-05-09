@@ -12,12 +12,19 @@
 <body>
 <div class="messagebox">
 </div>
-<div class="popup-modal shadow"
+<div class="modal popup-modal shadow"
      data-popup-modal="one">
-  <i class="fas fa-2x fa-times text-white bg-primary p-3 popup-modal__close"></i>
-  <h1 class="font-weight-bold">
+  <div class="modal-header">
     Configuration
-  </h1>
+      <span class="close"><i class="fas fa-2x fa-times text-white bg-primary p-3 popup-modal__close"></i>
+      </span>
+  </div>
+  <div class="modal-body">
+    Here are my settings.
+  </div>
+  <div class="modal-footer">
+    Save
+    </div>
 </div>
 <div id="pdfviewer-container">
   <iframe id="pdfviewer">
@@ -25,8 +32,8 @@
 </div>
 <div id="workarea">
   <div id="menu">
-    <button class="popup-trigger">Settings</button>
-    <button>Reload</button>
+    <button class="popup-trigger"><i class="fas fa-gear"></i>Settings</button>
+    <button><i class="fas fa-refresh"></i>Reload</button>
   </div>
   <div id="target">
     <label for="target-path">Target Folder</label>

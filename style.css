@@ -141,3 +141,42 @@ label {
     background-size: 0.7rem;
     padding-left: 1rem;
 }
+
+.modal {
+    position: absolute;
+    top:0;
+    left:0;
+    z-index: 2000;
+    height:300px;
+    width:400px;
+    background-color: white;
+    border-radius:10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding-box;
+    background-clip: padding-box;
+}
+
+.modal .modal-header {
+    margin:15px;
+}
+
+.modal .modal-body {
+    margin:5px 15px 5px 15px;
+}
+
+.modal .modal-footer {
+    margin:0 15px 15px 15px;
+}
+
+.modal .modal-header .close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: #999;
+    line-height: 10px;
+    cursor: pointer;
+}

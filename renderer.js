@@ -1,3 +1,7 @@
+//import 'bootstrap';
+//import './scss/app.scss';
+import "@fortawesome/fontawesome-free/js/all";
+
 window.addEventListener("DOMContentLoaded", () => {
     reloadFileList()
     reloadDirectoryList()
@@ -188,6 +192,6 @@ const showMessage = (message, type = "message") => {
     messagebox.addEventListener("transitionend", () => messagebox.remove())
 }
 
-const showConfigDialog = ()
+const showConfigDialog = () => {}
 
 window.addEventListener('keyup', handleKeyPress, true);
