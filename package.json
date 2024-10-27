@@ -1,6 +1,6 @@
 {
   "name": "docsorter",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Simple desktop application to support a workflow sorting PDF documents to a hierarchical target folder structure",
   "main": "index.js",
   "scripts": {
