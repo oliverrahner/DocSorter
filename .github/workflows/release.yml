@@ -4,10 +4,15 @@ on:
   push:
     tags:
       - 'v*'  # Trigger only on tags with 'v' prefix (e.g., v1.0.0)
+  workflow_dispatch:  # Adds a manual trigger option
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        extension: [deb, dmg, exe]  # File extensions based on the platform
     steps:
       # Step 1: Checkout the code
       - name: Checkout Code
@@ -17,27 +22,32 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '16'  # or the Node.js version required for your project
+          node-version: '16'  # Adjust to match your project’s Node.js version
 
-      # Step 3: Install dependencies
+      # Step 3: Extract the tag version
+      - name: Get Version from Tag
+        id: extract_version
+        run: echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+      # Step 4: Update package.json version
+      - name: Update package.json version
+        run: |
+          npm version --no-git-tag-version $VERSION
+        env:
+          VERSION: ${{ env.VERSION }}
+
+      # Step 5: Install dependencies
       - name: Install Dependencies
         run: npm install
 
-      # Step 4: Build for Windows
-      - name: Build Windows binaries
-        run: npm run build:win  # Customize with your build script
+      # Step 6: Build with Electron Forge
+      - name: Make Packages with Electron Forge
+        run: npm run make
         env:
-          CSC_LINK: ${{ secrets.WINDOWS_CERTIFICATE }} # Optional: for code signing
+          CSC_LINK: ${{ secrets.WINDOWS_CERTIFICATE }} # Optional for code signing
           CSC_KEY_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
 
-      # Step 5: Package the app using Electron Builder
-      - name: Package Application
-        run: npm run package  # Customize based on your script to package binaries
-        env:
-          CSC_LINK: ${{ secrets.WINDOWS_CERTIFICATE }}
-          CSC_KEY_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
-
-      # Step 6: Upload Release Artifacts
+      # Step 7: Create GitHub Release
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -49,12 +59,14 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Windows Binaries
+      # Step 8: Upload Built Packages
+      - name: Upload Built Packages
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: path/to/your/binary.exe  # Update this to match the built binary path
-          asset_name: your_project_name.exe    # Name the binary as desired
+          asset_path: |
+            out/make/*.${{ matrix.extension }}  # Path to built files per platform
+          asset_name: ${{ matrix.os }}-package-${{ github.ref_name }}.${{ matrix.extension }}
           asset_content_type: application/octet-stream
