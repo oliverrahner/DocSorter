@@ -23,7 +23,9 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     needs: create_release  # Ensures the release is created before build jobs
+    continue-on-error: true
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]  # Only one entry per OS
     steps:
