@@ -24,6 +24,17 @@ jobs:
           draft: false
           prerelease: false
 
+      # Capture the upload URL for the created release
+      - name: Get Release Upload URL
+        id: get_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          UPLOAD_URL=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }} \
+          | jq -r '.upload_url' | sed 's/{?name,label}//')
+          echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
+
   build:
     runs-on: ${{ matrix.os }}
     needs: create_release  # Ensures the release is created before build jobs
@@ -51,7 +62,8 @@ jobs:
 
       # Step 5: List Output Directory (for Debugging)
       - name: List Output Directory
-        run: ls -R out/make || dir out\make  # Unix and Windows commands to list the directory
+        run: |
+          ls -R out/make || dir out\make  # Unix and Windows commands to list the directory
 
       # Step 6: Upload Built Packages
       - name: Upload Built Packages
@@ -59,8 +71,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          upload_url: ${{ env.UPLOAD_URL }}
           asset_path: |
-            ${{ matrix.os == 'windows-latest' && 'out/make/*.exe' || matrix.os == 'macos-latest' && 'out/make/*.dmg' || matrix.os == 'ubuntu-latest' && 'out/make/*.deb' }}
-          asset_name: ${{ matrix.os }}-package-${{ github.ref_name }}.${{ matrix.os == 'windows-latest' && 'exe' || matrix.os == 'macos-latest' && 'dmg' || 'deb' }}
+            ${{ matrix.os == 'windows-latest' && 'out/make/squirrel.windows/*.exe' || matrix.os == 'macos-latest' && 'out/make/zip/darwin/arm64/*.zip' || matrix.os == 'ubuntu-latest' && 'out/make/deb/*.deb' }}
+          asset_name: ${{ matrix.os }}-package-${{ github.ref_name }}.${{ matrix.os == 'windows-latest' && 'exe' || matrix.os == 'macos-latest' && 'zip' || 'deb' }}
           asset_content_type: application/octet-stream
