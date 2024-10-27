@@ -42,7 +42,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ${{ matrix.os == 'windows-latest' && 'out/make/squirrel.windows/x64/*.exe' || matrix.os == 'macos-latest' && 'out/make/zip/darwin/arm64/*.zip' || matrix.os == 'ubuntu-latest' && 'out/make/deb/*.deb' }}
+            ${{ matrix.os == 'windows-latest' && 'out/make/squirrel.windows/x64/*.exe' || matrix.os == 'macos-latest' && 'out/make/zip/darwin/arm64/*.zip' || matrix.os == 'ubuntu-latest' && 'out/make/deb/x64/*.deb' }}
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
