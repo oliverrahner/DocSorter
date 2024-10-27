@@ -1,5 +1,9 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
+const Store = require('electron-store')
+
+if (require('electron-squirrel-startup')) return app.quit();
+Store.initRenderer()
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -11,7 +15,7 @@ const createWindow = () => {
     })
 
     win.loadFile('index.html')
-    win.webContents.openDevTools()
+    //win.webContents.openDevTools()
 }
 
 app.whenReady().then(() => {

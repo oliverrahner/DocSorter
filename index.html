@@ -8,23 +8,27 @@
   <title>PDF Document Mover</title>
   <link rel="stylesheet" href="style.css"/>
   <script src="./renderer.js"></script>
+  <link href="assets/fontawesome/css/all.css" rel="stylesheet">
+  <!--script src="assets/fontawesome/js/all.js" data-auto-add-css="false"></script>
+  <link href="assets/fontawesome/css/svg-with-js.css"-->
 </head>
 <body>
-<div class="messagebox">
-</div>
-<div class="modal popup-modal shadow"
-     data-popup-modal="one">
+<div class="body-blackout"></div>
+<div class="popup-modal modal"
+     data-popup-modal="settings">
   <div class="modal-header">
-    Configuration
-      <span class="close"><i class="fas fa-2x fa-times text-white bg-primary p-3 popup-modal__close"></i>
-      </span>
+  Settings
+  <div class="close"><i class="fas fa-times popup-modal__close"></i></span></div>
   </div>
   <div class="modal-body">
-    Here are my settings.
+    <label for="setting-sourcePath">Source Path</label>
+    <input id="setting-sourcePath" class="setting" data-application-setting="sourcePath" type="text">
+    <label for="setting-targetPath">Destination Path</label>
+    <input id="setting-targetPath" class="setting" data-application-setting="targetPath" type="text">
   </div>
   <div class="modal-footer">
-    Save
-    </div>
+    <button id="save-settings" class="popup-modal__close">Save</button>
+  </div>
 </div>
 <div id="pdfviewer-container">
   <iframe id="pdfviewer">
@@ -32,12 +36,17 @@
 </div>
 <div id="workarea">
   <div id="menu">
-    <button class="popup-trigger"><i class="fas fa-gear"></i>Settings</button>
-    <button><i class="fas fa-refresh"></i>Reload</button>
+    <button id="button-settings" title="Settings" data-popup-trigger="settings" class="popup-trigger"><i class="fas fa-2x fa-gear"></i>&nbsp;</button>
+    <button id="button-refresh" title="Refresh"><i class="fas fa-2x fa-refresh"></i>&nbsp;</button>
+    <button id="button-prev" title="Previous Document"><i class="fas fa-2x fa-arrow-left"></i>&nbsp;</button>
+    <button id="button-next" title="Next Document"><i class="fas fa-2x fa-arrow-right"></i>&nbsp;</button>
   </div>
   <div id="target">
     <label for="target-path">Target Folder</label>
-    <input id="target-path" type="text" list="folderlist">
+    <div class="target-input-wrapper">
+      <span class="open-link inactive" title="Open folder in Explorer"><i class="fas fa-folder-open"></i></span>
+      <input id="target-path" type="text" list="folderlist">
+    </div>
     <div id="folderlist-container">
       <div id="folderlist-count">&nbsp;</div>
       <datalist id="folderlist"></datalist>
@@ -47,13 +56,13 @@
     <label for="existing-documents">Existing Documents in Target Directory</label>
     <div id="existing-documents"></div>
   </div>
-  <div id="documentdate-container">
-    <label for="documentdate">Document Date</label>
-    <input id="documentdate" type="text">
+  <div id="document-date-container">
+    <label for="document-date">Document Date</label>
+    <input id="document-date" type="text">
   </div>
-  <div id="documentname-container">
-    <label for="documentname">Document Name</label>
-    <input id="documentname" type="text">
+  <div id="document-name-container">
+    <label for="document-name">Document Name</label>
+    <input id="document-name" type="text">
   </div>
 
   <div class="button-container">

@@ -1,9 +1,10 @@
 * {
-    box-sizing: border-box;
+    box-sizing: inherit;
     font-family: "Segoe UI Variable", Arial, SansSerif;
 }
 
 html, body {
+    box-sizing: border-box;
     height: 100vh;
     width: 100vw;
     overflow: hidden;
@@ -40,6 +41,32 @@ body {
 #target {
     grid-column: 1 / 2;
     grid-row: 1 / 1;
+}
+
+.target-input-wrapper {
+    position: relative;
+}
+
+.open-link {
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    left: 11px;
+    cursor: pointer;
+}
+
+.open-link svg {
+    width: 1rem;
+    color: #ffda70;
+}
+
+#target-path {
+    padding-left: 30px;
+}
+
+.inactive {
+    opacity: 0.5;
+    cursor: default;
 }
 
 #folderlist-container {
@@ -133,6 +160,14 @@ label {
     display: block;
 }
 
+.file {
+    cursor: pointer;
+}
+
+.file:hover {
+    background-color: #cce8ff;
+}
+
 .file.pdf {
     margin-left: 10px;
     background-image: url("pdf_file_icon.svg");
@@ -151,13 +186,29 @@ label {
     width:400px;
     background-color: white;
     border-radius:10px;
-    border: 1px solid rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(0, 0, 0, 0.3);
     -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
     -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
     box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
     -webkit-background-clip: padding-box;
     -moz-background-clip: padding-box;
     background-clip: padding-box;
+}
+
+#menu button {
+    box-sizing: content-box;
+    padding: 5px;
+    width: 40px;
+    height: 40px;
+}
+
+#menu button svg {
+    width: 30px;
+    height: 30px;
+}
+
+#menu #button-settings {
+    float: right;
 }
 
 .modal .modal-header {
@@ -170,6 +221,9 @@ label {
 
 .modal .modal-footer {
     margin:0 15px 15px 15px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 .modal .modal-header .close {
@@ -179,4 +233,52 @@ label {
     color: #999;
     line-height: 10px;
     cursor: pointer;
+}
+
+.body-blackout {
+    position: absolute;
+    z-index: 1010;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .65);
+    display: none;
+}
+
+.body-blackout.is-blacked-out {
+    display: block;
+}
+
+
+.popup-trigger {
+    display: inline-block;
+}
+
+.popup-modal {
+    height: 365px;
+    width: 650px;
+    background-color: #fff;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 45px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 300ms ease-in-out;
+    z-index: 1011;
+}
+
+.popup-modal.is--visible {
+     opacity: 1;
+     pointer-events: auto;
+}
+
+.popup-model__close {
+     position: absolute;
+     font-size: 1.2rem;
+     right: -10px;
+     top: -10px;
+     cursor: pointer;
 }

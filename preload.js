@@ -1,15 +1,16 @@
-const { contextBridge } = require('electron')
+const { contextBridge, shell } = require('electron')
+const electron = require('electron')
 const path = require("path")
 const fs = require("fs")
 const klaw = require("klaw-sync")
+const Store = require("electron-store")
 //const chokidar = require("chokidar")
 
-let applicationConfiguration = {
-    sourcePath: "Z:/",
-    targetPath: "C:\\Users\\Oliver\\Seafile\\My Library\\Dokumente"
-}
+const myStore = new Store()
 
 //let watcher = chokidar.watch(sourcePath, {persistent: true})
+
+
 
 window.addEventListener('DOMContentLoaded', () => {
     const replaceText = (selector, text) => {
@@ -30,25 +31,28 @@ contextBridge.exposeInMainWorld('myAPI', {
 //            .on('unlink', func);
 //    },
 
-    applicationConfiguration: applicationConfiguration,
+    applicationConfiguration: myStore,
 
     listSourceFiles: () => {
-        //const files = await fs.readdir("Z:/")
-        let files = fs.readdirSync(applicationConfiguration.sourcePath, { withFileTypes: true })
+        if (!fs.existsSync(myStore.get("sourcePath"))) return [];
+        let files = fs.readdirSync(myStore.get("sourcePath"), { withFileTypes: true })
         files = files.filter((value, index) => value.isFile() && value.name.endsWith(".pdf"))
-        files.forEach((value) => value.fullpath = path.join(applicationConfiguration.sourcePath, value.name))
+        files.forEach((value) => value.fullpath = path.join(myStore.get("sourcePath"), value.name))
         return files;
     },
 
     listDirectories: () => {
-        let directories = klaw(applicationConfiguration.targetPath, {nofile: true})
-        directories.forEach((value) => value.relativePath = path.relative(applicationConfiguration.targetPath, value.path))
+        if (!fs.existsSync(myStore.get("targetPath"))) return [];
+        let directories = klaw(myStore.get("targetPath"), {nofile: true})
+        directories.forEach((value) => value.relativePath = path.relative(myStore.get("targetPath"), value.path))
         return directories
     },
 
-    listTargetFiles: (path) => {
-        let files = fs.readdirSync(path, { withFileTypes: true })
+    listTargetFiles: (targetPath) => {
+        let files = fs.readdirSync(targetPath, { withFileTypes: true })
         files = files.filter((value, index) => value.isFile() && value.name.endsWith(".pdf"))
+        files.forEach((value) => value.fullpath = path.join(targetPath, value.name))
+        files.forEach((value) => value.relativePath = path.relative(myStore.get("targetPath"), value.fullpath))
         files = files.sort((a, b) => {
             if (b.name === a.name) return 0;
             if (b.name < a.name) return -1;
@@ -57,9 +61,25 @@ contextBridge.exposeInMainWorld('myAPI', {
         return files;
     },
 
+    openPath: (openPath) => {
+        if (typeof(openPath) === "string") {
+            openPath = openPath.trim()
+            openPath = path.join(myStore.get("targetPath"), openPath)
+            if (!fs.existsSync(openPath)) {
+                fs.mkdirSync(openPath)
+            }
+        } else {
+            openPath = openPath.path
+        }
+        shell.openPath(openPath).then()
+    },
+
     moveFile: (file, destPath, dateString, name) => {
+        dateString = dateString.trim()
+        name = name.trim()
         if (typeof(destPath) === "string") {
-            destPath = path.join(applicationConfiguration.targetPath, destPath)
+            destPath = destPath.trim()
+            destPath = path.join(myStore.get("targetPath"), destPath)
             if (!fs.existsSync(destPath)) {
                 fs.mkdirSync(destPath)
             }
@@ -92,10 +112,10 @@ contextBridge.exposeInMainWorld('myAPI', {
     },
 
     getConfig: () => {
-        return applicationConfiguration
+        return myStore.store
     },
 
-    setConfig: (config) => {
-        applicationConfiguration = config
+    setConfig: (key, value) => {
+        myStore.set(key, value)
     }
 })

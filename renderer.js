@@ -1,14 +1,34 @@
-//import 'bootstrap';
-//import './scss/app.scss';
-import "@fortawesome/fontawesome-free/js/all";
 
 window.addEventListener("DOMContentLoaded", () => {
     reloadFileList()
     reloadDirectoryList()
+
+    let config = window.myAPI.getConfig()
+    if (!(config["sourcePath"] && config["targetPath"])) {
+        showModal('settings')
+    }
+
     document.getElementById("target-path").addEventListener("change", targetFolderChanged)
     document.getElementById("submit").addEventListener("click", submit)
     document.getElementById("delete-button").addEventListener("click", markForDeletion)
+    document.getElementById("button-refresh").addEventListener("click", reloadFileList)
+    document.getElementById("button-prev").addEventListener("click", showPreviousFile)
+    document.getElementById("button-next").addEventListener("click", showNextFile)
 //    window.myAPI.addSourceFilesChangedListener(reloadFileList);
+
+
+    // update settings dialog fields when opening
+    document.querySelectorAll(`[data-popup-trigger="settings"]`).forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            settings.settingsToFields()
+        })
+    })
+    document.querySelector("#save-settings").addEventListener('click', () => {
+        settings.fieldsToSettings()
+        reloadFileList()
+        reloadDirectoryList()
+    })
+
 
     const modalTriggers = document.querySelectorAll('.popup-trigger')
     const modalCloseTrigger = document.querySelector('.popup-modal__close')
@@ -16,16 +36,10 @@ window.addEventListener("DOMContentLoaded", () => {
     modalTriggers.forEach(trigger => {
         trigger.addEventListener('click', () => {
             const { popupTrigger } = trigger.dataset
-            const popupModal = document.querySelector(`[data-popup-modal="${popupTrigger}"]`)
-            popupModal.classList.add('is--visible')
-            bodyBlackout.classList.add('is-blacked-out')
-
-            popupModal.querySelector('.popup-modal__close').addEventListener('click', () => {
-                popupModal.classList.remove('is--visible')
-                bodyBlackout.classList.remove('is-blacked-out')
-            })
+            showModal(popupTrigger)
         })
     })
+
 })
 
 let files = []
@@ -34,12 +48,48 @@ let directories = []
 let selectedDirectory = {}
 let directoryName = ""
 
+let targetFolderClickHandler
+
+const showModal = (name) => {
+    const bodyBlackout = document.querySelector('.body-blackout')
+    const popupModal = document.querySelector(`[data-popup-modal="${name}"]`)
+    popupModal.classList.add('is--visible')
+    bodyBlackout.classList.add('is-blacked-out')
+
+    popupModal.querySelectorAll('.popup-modal__close').forEach(trigger => trigger.addEventListener('click', () => {
+        closeModal(name)
+    }))
+}
+
+const closeModal = (name) => {
+    const bodyBlackout = document.querySelector('.body-blackout')
+    const popupModal = document.querySelector(`[data-popup-modal="${name}"]`)
+    popupModal.classList.remove('is--visible')
+    bodyBlackout.classList.remove('is-blacked-out')
+}
+
 const targetFolderChanged = (event) => {
-    let selectedDir = document.querySelector('#target-path').value
+    let selectedDirElement = document.querySelector('#target-path')
+    let opendirElement = document.querySelector('.open-link')
+    let selectedDir = selectedDirElement.value
     selectedDirectory = directories.filter(x => x.relativePath === selectedDir)[0]
-    if (selectedDirectory === undefined)
+    if (selectedDirectory === undefined) {
         directoryName = selectedDir
+        opendirElement.removeEventListener("click", openPath)
+        opendirElement.classList.add("inactive")
+    } else {
+        targetFolderClickHandler = opendirElement.addEventListener("click", openPath)
+        opendirElement.classList.remove("inactive")
+    }
     updateExistingFiles()
+}
+
+const openPath = () => {
+    window.myAPI.openPath(selectedDirectory)
+}
+
+const openFile = (event) => {
+    window.myAPI.openPath(event.currentTarget.relativePath)
 }
 
 const updateExistingFiles = () => {
@@ -52,6 +102,9 @@ const updateExistingFiles = () => {
         child.innerHTML = file.name
         child.classList.add("file")
         child.classList.add("pdf")
+        child.title = "Open this file by double-clicking"
+        child.relativePath = file.relativePath
+        child.addEventListener("dblclick", openFile, false)
     }
 }
 
@@ -108,10 +161,10 @@ const reloadFileList = () => {
         fileIndex = 0
     } else {
         // make sure to keep the same file on display when the list has changed
-        const newIndex = files.find(x => x.name === currentFilename)?.index
+        const newIndex = files.findIndex(x => x.name === currentFilename)
         // if the file has gone, show the next one (meaning index doesn't change)
         if (newIndex === undefined || newIndex === -1) {
-            fileIndex--
+            //fileIndex = fileIndex
         } else {
             fileIndex = newIndex
         }
@@ -155,14 +208,25 @@ const submit = () => {
         let result = window.myAPI.moveFile(
             files[fileIndex],
             selectedDirectory !== undefined ? selectedDirectory : directoryName,
-            document.getElementById('documentdate').value,
-            document.getElementById('documentname').value
+            document.getElementById('document-date').value,
+            document.getElementById('document-name').value
         )
         showMessage("File moved successfully.")
     } catch (ex) {
             showError("Error: " + ex.message)
     }
     reloadFileList()
+    resetFields()
+}
+
+const resetFields = () => {
+    document.getElementById("target-path").focus()
+    document.getElementById("target-path").value = ''
+    selectedDirectory = undefined
+    document.getElementById("document-date").value = ''
+    document.getElementById("document-name").value = ''
+
+    updateExistingFiles()
 }
 
 const markForDeletion = () => {
@@ -192,6 +256,25 @@ const showMessage = (message, type = "message") => {
     messagebox.addEventListener("transitionend", () => messagebox.remove())
 }
 
-const showConfigDialog = () => {}
+const settings = {
+    fieldsToSettings: () => {
+        let settingsFields = document.querySelectorAll(".setting")
+        settingsFields.forEach(field => {
+            const { applicationSetting } = field.dataset
+            window.myAPI.setConfig(applicationSetting, field.value)
+        })
+    },
+    settingsToFields: () => {
+        let currentSettings = window.myAPI.getConfig()
+        for (const setting in currentSettings) {
+            let targetField = document.querySelector(`[data-application-setting="${setting}"]`)
+            if (targetField !== undefined) {
+                targetField.value = currentSettings[setting]
+            }
+        }
+    }
+}
+
+
 
 window.addEventListener('keyup', handleKeyPress, true);
