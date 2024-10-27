@@ -30,9 +30,6 @@ jobs:
       # Step 4: Build with Electron Forge
       - name: Make Packages with Electron Forge
         run: npm run make
-        env:
-          CSC_LINK: ${{ secrets.WINDOWS_CERTIFICATE }}  # Optional for code signing
-          CSC_KEY_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
 
       # Step 5: Create GitHub Release
       - name: Create GitHub Release
