@@ -4,15 +4,14 @@ on:
   push:
     tags:
       - 'v*'  # Trigger only on tags with 'v' prefix (e.g., v1.0.0)
-  workflow_dispatch:  # Adds a manual trigger option
+  workflow_dispatch:  # Allows manual trigger
 
 jobs:
   release:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        extension: [deb, dmg, exe]  # File extensions based on the platform
+        os: [ubuntu-latest, macos-latest, windows-latest]  # Only one entry per OS
     steps:
       # Step 1: Checkout the code
       - name: Checkout Code
@@ -22,32 +21,20 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '16'  # Adjust to match your project’s Node.js version
+          node-version: '16'  # Adjust as needed for your project
 
-      # Step 3: Extract the tag version
-      - name: Get Version from Tag
-        id: extract_version
-        run: echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
-
-      # Step 4: Update package.json version
-      - name: Update package.json version
-        run: |
-          npm version --no-git-tag-version $VERSION
-        env:
-          VERSION: ${{ env.VERSION }}
-
-      # Step 5: Install dependencies
+      # Step 3: Install dependencies
       - name: Install Dependencies
         run: npm install
 
-      # Step 6: Build with Electron Forge
+      # Step 4: Build with Electron Forge
       - name: Make Packages with Electron Forge
         run: npm run make
         env:
-          CSC_LINK: ${{ secrets.WINDOWS_CERTIFICATE }} # Optional for code signing
+          CSC_LINK: ${{ secrets.WINDOWS_CERTIFICATE }}  # Optional for code signing
           CSC_KEY_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
 
-      # Step 7: Create GitHub Release
+      # Step 5: Create GitHub Release
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -59,7 +46,7 @@ jobs:
           draft: false
           prerelease: false
 
-      # Step 8: Upload Built Packages
+      # Step 6: Upload Built Packages
       - name: Upload Built Packages
         uses: actions/upload-release-asset@v1
         env:
@@ -67,6 +54,8 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: |
-            out/make/*.${{ matrix.extension }}  # Path to built files per platform
-          asset_name: ${{ matrix.os }}-package-${{ github.ref_name }}.${{ matrix.extension }}
+            out/make/*.exe  # For Windows
+            out/make/*.dmg  # For macOS
+            out/make/*.deb  # For Linux
+          asset_name: ${{ matrix.os }}-package-${{ github.ref_name }}.${{ matrix.os == 'windows-latest' && 'exe' || matrix.os == 'macos-latest' && 'dmg' || 'deb' }}
           asset_content_type: application/octet-stream
