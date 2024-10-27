@@ -10,16 +10,25 @@ jobs:
   create_release:
     runs-on: ubuntu-latest
     steps:
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up GitHub CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh
+
+      - name: Authenticate GitHub CLI
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
+        run: gh auth login --with-token <<< "$GITHUB_TOKEN"
+
+      - name: Create GitHub Release
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ github.ref_name }} --title "Release ${{ github.ref_name }}" --notes "Automated release for version ${{ github.ref_name }}" --target main
 
   build:
     runs-on: ${{ matrix.os }}
@@ -52,7 +61,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          upload_url: "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ needs.create_release.outputs.release_id }}/assets{?name,label}"
           asset_path: |
             out/make/*.exe  # For Windows
             out/make/*.dmg  # For macOS
