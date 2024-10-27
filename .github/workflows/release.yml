@@ -53,6 +53,6 @@ jobs:
         with:
           upload_url: "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ needs.create_release.outputs.release_id }}/assets{?name,label}"
           asset_path: |
-            ${{ matrix.os == 'windows-latest' && 'out/make/*.exe' || matrix.os == 'macos-latest' && 'out/make/*.dmg' || matrix.os == 'ubuntu-latest' && 'out/make/*.deb' }}
-          asset_name: ${{ matrix.os }}-package-${{ github.ref_name }}.${{ matrix.os == 'windows-latest' && 'exe' || matrix.os == 'macos-latest' && 'dmg' || 'deb' }}
+            ${{ matrix.os == 'windows-latest' && 'out/make/*.exe' || matrix.os == 'macos-latest' && 'out/make/*.zip' || matrix.os == 'ubuntu-latest' && 'out/make/*.deb' }}
+          asset_name: ${{ matrix.os }}-package-${{ github.ref_name }}.${{ matrix.os == 'windows-latest' && 'exe' || matrix.os == 'macos-latest' && 'zip' || 'deb' }}
           asset_content_type: application/octet-stream
