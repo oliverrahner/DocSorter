@@ -25,7 +25,8 @@ jobs:
     needs: create_release  # Ensures the release is created before build jobs
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]  # Only one entry per OS
+        #os: [ubuntu-latest, macos-latest, windows-latest]  # Only one entry per OS
+        os: [windows-latest]  # Only one entry per OS
     steps:
       # Step 1: Checkout the code
       - name: Checkout Code
