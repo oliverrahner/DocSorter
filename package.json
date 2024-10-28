@@ -1,6 +1,6 @@
 {
   "name": "docsorter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Simple desktop application to support a workflow sorting PDF documents to a hierarchical target folder structure",
   "main": "index.js",
   "scripts": {
@@ -33,7 +33,9 @@
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
-          "platforms": ["win32"]
+          "platforms": [
+            "win32"
+          ]
         },
         {
           "name": "@electron-forge/maker-zip",
@@ -43,7 +45,9 @@
         },
         {
           "name": "@electron-forge/maker-deb",
-          "platforms": ["linux"]
+          "platforms": [
+            "linux"
+          ]
         }
       ]
     }
