@@ -75,13 +75,15 @@ contextBridge.exposeInMainWorld('myAPI', {
     },
 
     moveFile: (file, destPath, dateString, name) => {
+        let targetDirCreated = false
         dateString = dateString.trim()
         name = name.trim()
-        if (typeof(destPath) === "string") {
+        if (typeof (destPath) === "string") {
             destPath = destPath.trim()
             destPath = path.join(myStore.get("targetPath"), destPath)
             if (!fs.existsSync(destPath)) {
                 fs.mkdirSync(destPath)
+                targetDirCreated = true
             }
         } else {
             destPath = destPath.path
@@ -102,6 +104,10 @@ contextBridge.exposeInMainWorld('myAPI', {
             fs.unlinkSync(file.fullpath)
         } catch (e) {
             throw "Error during file delete: " + ex.message
+        }
+
+        return {
+            targetDirCreated: targetDirCreated
         }
     },
 
