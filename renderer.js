@@ -1,4 +1,3 @@
-
 window.addEventListener("DOMContentLoaded", () => {
     reloadFileList()
     reloadDirectoryList()
@@ -11,7 +10,10 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("target-path").addEventListener("change", targetFolderChanged)
     document.getElementById("submit").addEventListener("click", submit)
     document.getElementById("delete-button").addEventListener("click", markForDeletion)
-    document.getElementById("button-refresh").addEventListener("click", reloadFileList)
+    document.getElementById("button-refresh").addEventListener("click", () => {
+        reloadFileList();
+        reloadDirectoryList()
+    })
     document.getElementById("button-prev").addEventListener("click", showPreviousFile)
     document.getElementById("button-next").addEventListener("click", showNextFile)
 //    window.myAPI.addSourceFilesChangedListener(reloadFileList);
@@ -35,7 +37,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const bodyBlackout = document.querySelector('.body-blackout')
     modalTriggers.forEach(trigger => {
         trigger.addEventListener('click', () => {
-            const { popupTrigger } = trigger.dataset
+            const {popupTrigger} = trigger.dataset
             showModal(popupTrigger)
         })
     })
@@ -119,7 +121,7 @@ const targetFolderChangedOld = (event) => {
         let lastIndex = 0;
         for (let token of tokens) {
             let currentIndex = relPath.indexOf(token.toUpperCase(), lastIndex)
-            if (currentIndex == -1) {
+            if (currentIndex === -1) {
                 return false;
             }
             value.matches.unshift({startIdx: currentIndex, length: token.length})
@@ -198,22 +200,29 @@ const showNextFile = () => {
 
 const handleKeyPress = (event) => {
     switch (event.key) {
-        case 'ArrowLeft': if (event.altKey) showPreviousFile(); break;
-        case 'ArrowRight': if (event.altKey) showNextFile(); break;
+        case 'ArrowLeft':
+            if (event.altKey) showPreviousFile();
+            break;
+        case 'ArrowRight':
+            if (event.altKey) showNextFile();
+            break;
     }
 }
 
 const submit = () => {
     try {
-        let result = window.myAPI.moveFile(
+        let {targetDirCreated} = window.myAPI.moveFile(
             files[fileIndex],
             selectedDirectory !== undefined ? selectedDirectory : directoryName,
             document.getElementById('document-date').value,
             document.getElementById('document-name').value
         )
         showMessage("File moved successfully.")
+        if (targetDirCreated) {
+            reloadDirectoryList()
+        }
     } catch (ex) {
-            showError("Error: " + ex.message)
+        showError("Error: " + ex.message)
     }
     reloadFileList()
     resetFields()
@@ -231,7 +240,7 @@ const resetFields = () => {
 
 const markForDeletion = () => {
     try {
-        let result = window.myAPI.deleteFile(
+        window.myAPI.deleteFile(
             files[fileIndex]
         )
         showMessage("File renamed.")
@@ -260,7 +269,7 @@ const settings = {
     fieldsToSettings: () => {
         let settingsFields = document.querySelectorAll(".setting")
         settingsFields.forEach(field => {
-            const { applicationSetting } = field.dataset
+            const {applicationSetting} = field.dataset
             window.myAPI.setConfig(applicationSetting, field.value)
         })
     },
@@ -274,7 +283,6 @@ const settings = {
         }
     }
 }
-
 
 
 window.addEventListener('keyup', handleKeyPress, true);
